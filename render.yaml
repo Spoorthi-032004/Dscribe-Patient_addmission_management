@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: patient-admission-app
+    runtime: python
+    plan: free
+    buildCommand: |
+      pip install -r backend/requirements.txt
+      cd frontend && npm install && npm run build
+    startCommand: uvicorn backend.app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: SERVE_STATIC
+        value: "true"
+      - key: CORS_ORIGINS
+        value: "*"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: patient-admission-db
+          property: connectionString
+
+databases:
+  - name: patient-admission-db
+    plan: free
